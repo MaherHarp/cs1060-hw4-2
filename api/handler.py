@@ -206,4 +206,5 @@ def debug():
         'files': os.listdir(str(ROOT))[:20]
     }
 
-handler = app
+# Vercel Python runtime expects 'app' to be exported
+# Don't need 'handler' variable
