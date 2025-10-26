@@ -1,8 +1,5 @@
 {
-  "functions": {
-    "api/**/*.py": { "runtime": "python3.9" }
-  },
-  "routes": [
-    { "src": "/(.*)", "dest": "/api/handler.py" }
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/api/handler.py" }
   ]
 }
