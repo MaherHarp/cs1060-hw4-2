@@ -1,0 +1,11 @@
+{
+  "functions": {
+    "api/**/*.py": { "runtime": "vercel-python@0.6.2" }
+  },
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/api/$1.py" },
+    { "src": "/(county_data)$", "dest": "/api/county_data.py" },
+    { "src": "/(obesity|poverty|fpm)$", "dest": "/api/static_lists.py" },
+    { "src": "/@\\.\\./(.*)", "dest": "/api/static_lists.py" }
+  ]
+}
