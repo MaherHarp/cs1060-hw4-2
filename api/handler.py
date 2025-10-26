@@ -195,4 +195,15 @@ def not_found(_):
     return _json({'error': 'Not found'}, 404)
 
 # Export for Vercel
+# Add debug endpoint
+@app.route('/debug')
+def debug():
+    import os
+    return {
+        'root': str(ROOT),
+        'db_exists': str(DB_PATH.exists()),
+        'db_path': str(DB_PATH),
+        'files': os.listdir(str(ROOT))[:20]
+    }
+
 handler = app
