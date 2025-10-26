@@ -2,6 +2,7 @@ import json
 import sqlite3
 from pathlib import Path
 from flask import Flask, request, make_response
+import traceback
 
 app = Flask(__name__)
 ROOT = Path(__file__).resolve().parents[1]
@@ -24,6 +25,12 @@ def _json(data, status=200):
     resp = make_response(json.dumps(data), status)
     resp.headers['Content-Type'] = 'application/json'
     return resp
+
+# Add global error handler
+@app.errorhandler(Exception)
+def handle_exception(e):
+    """Handle all unhandled exceptions"""
+    return _json({'error': str(e), 'traceback': traceback.format_exc()}, 500)
 
 def _coffee_teapot_trigger():
     """Check for coffee=teapot in query params or JSON body."""
