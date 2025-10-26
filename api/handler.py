@@ -187,5 +187,5 @@ def catch_all(path):
 def not_found(_):
     return _json({'error': 'Not found'}, 404)
 
-# Vercel needs this
+# Export for Vercel
 handler = app
