@@ -65,13 +65,12 @@ def _load_array(path: Path):
 @app.route('/api/county_data', methods=['POST', 'GET'])
 @app.route('/county_data', methods=['POST', 'GET'])
 def county_data():
-    if request.method != 'POST':
-        if _coffee_teapot_trigger():
-            return _json({'error': 'I am a teapot'}, 418)
-        return _json({'error': 'POST required'}, 400)
-
+    # Teapot check FIRST before anything else
     if _coffee_teapot_trigger():
         return _json({'error': 'I am a teapot'}, 418)
+    
+    if request.method != 'POST':
+        return _json({'error': 'POST required'}, 400)
 
     data = request.get_json(silent=True)
     if not isinstance(data, dict):
