@@ -26,26 +26,30 @@ def _json(data, status=200):
     resp.headers['Content-Type'] = 'application/json'
     return resp
 
-# Add global error handler
 @app.errorhandler(Exception)
 def handle_exception(e):
-    """Handle all unhandled exceptions"""
     return _json({'error': str(e), 'traceback': traceback.format_exc()}, 500)
 
 def _coffee_teapot_trigger():
-    """Check for coffee=teapot in query params or JSON body."""
     try:
         if request.args.get('coffee') == 'teapot':
             return True
         body = request.get_json(silent=True)
         if isinstance(body, dict) and body.get('coffee') == 'teapot':
             return True
+        # Also check raw data in case JSON parsing fails
+        if request.data:
+            try:
+                data_str = request.data.decode('utf-8')
+                if 'coffee' in data_str and 'teapot' in data_str:
+                    return True
+            except:
+                pass
     except Exception:
         pass
     return False
 
 def _load_array(path: Path):
-    """Load a JSON file and ensure it returns an array."""
     if not path.exists():
         return None
     with path.open('r', encoding='utf-8') as f:
@@ -61,11 +65,9 @@ def _load_array(path: Path):
         return []
     return []
 
-# County data endpoint
 @app.route('/api/county_data', methods=['POST', 'GET'])
 @app.route('/county_data', methods=['POST', 'GET'])
 def county_data():
-    # Teapot check FIRST before anything else
     if _coffee_teapot_trigger():
         return _json({'error': 'I am a teapot'}, 418)
     
@@ -140,7 +142,6 @@ def county_data():
         out.append({k: ('' if r[k] is None else str(r[k])) for k in r.keys()})
     return _json(out, 200)
 
-# Quirky paths
 @app.route('/@../obesity.json', methods=['GET', 'POST'])
 @app.route('/@../poverty.json', methods=['GET', 'POST'])
 @app.route('/@../fpm.json', methods=['GET', 'POST'])
@@ -163,7 +164,6 @@ def serve_quirky():
         return _json({'error': 'Not found'}, 404)
     return _json(data, 200)
 
-# List endpoints
 @app.route('/api/obesity', methods=['GET', 'POST'])
 @app.route('/api/poverty', methods=['GET', 'POST'])
 @app.route('/api/fpm', methods=['GET', 'POST'])
@@ -181,7 +181,6 @@ def serve_list():
         return _json({'error': 'Not found'}, 404)
     return _json(data, 200)
 
-# Catch-all
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def catch_all(path):
@@ -193,8 +192,6 @@ def catch_all(path):
 def not_found(_):
     return _json({'error': 'Not found'}, 404)
 
-# Export for Vercel
-# Add debug endpoint
 @app.route('/debug')
 def debug():
     import os
@@ -205,5 +202,4 @@ def debug():
         'files': os.listdir(str(ROOT))[:20]
     }
 
-# Vercel Python runtime expects 'app' to be exported
-# Don't need 'handler' variable
+
