@@ -37,7 +37,6 @@ def _coffee_teapot_trigger():
         body = request.get_json(silent=True)
         if isinstance(body, dict) and body.get('coffee') == 'teapot':
             return True
-        # Also check raw data in case JSON parsing fails
         if request.data:
             try:
                 data_str = request.data.decode('utf-8')
